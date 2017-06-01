@@ -1,0 +1,34 @@
+* {
+  margin: 0;
+  padding: 0
+}
+
+$red: red;
+
+html,
+body {
+  height: 100%
+}
+body {
+  background: $red;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.asd {
+  background: $red;
+  display: flex;
+  justify-content: center;
+}
+.dasdasdasd {
+  background: $red;
+  display: flex;
+  justify-content: center;
+}
+.asdsss {
+  background: $red;
+  display: flex;
+  justify-content: center;
+}
