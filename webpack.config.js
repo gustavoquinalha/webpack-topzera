@@ -1,5 +1,5 @@
-var webpack = require('webpack');
-var path = require('path');
+var path = require('path')
+var webpack = require('webpack')
 var glob = require('glob');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 let PurifyCSSPlugin = require('purifycss-webpack');
@@ -7,45 +7,66 @@ let PurifyCSSPlugin = require('purifycss-webpack');
 var inProduction = (process.env.NODE_ENV === 'production');
 
 module.exports = {
-    entry: {
+  entry: {
       app: [
         './src/main.js',
-        './src/main.scss'
+        './src/css/main.scss'
       ]
     },
 
-    output: {
-      path: path.resolve(__dirname, './dist'),
-      filename: '[name].js'
-    },
-
-    module: {
-      rules: [
-        {
-          test: /\.s[ac]ss$/,
-          use: ExtractTextPlugin.extract({
-            use: ['css-loader', 'sass-loader'],
-            fallback: 'style-loader'
-          })
-        },
-
-        {
-          test: /\.png|jpe?g|svg$/,
-          loader: 'file-loader',
-          options: {
-            name: 'images/[name][hash].[ext]'
+  output: {
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '/dist/',
+    filename: 'build.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            'scss': 'vue-style-loader!css-loader!sass-loader',
+            'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
           }
-        },
-
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: "babel-loader"
         }
-      ]
-    },
+      },
+      {
+        test: /\.s[ac]ss$/,
+        use: ExtractTextPlugin.extract({
+          use: ['css-loader', 'sass-loader'],
+          fallback: 'style-loader'
+        })
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]?[hash]'
+        }
+      }
+    ]
+  },
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    }
+  },
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true
+  },
+  performance: {
+    hints: false
+  },
+  devtool: '#eval-source-map',
 
-    plugins: [
+  plugins: [
       new ExtractTextPlugin('[name].css'),
 
       new PurifyCSSPlugin({
@@ -57,10 +78,25 @@ module.exports = {
         minimize: inProduction
       })
     ]
-};
+}
 
 if (inProduction) {
-  module.exports.plugins.push(
-    new webpack.optimize.UglifyJsPlugin()
-  );
+  module.exports.devtool = '#source-map'
+  // http://vue-loader.vuejs.org/en/workflow/production.html
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false
+      }
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ])
 }
