@@ -1,5 +1,7 @@
 # webpack-topzera
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/gustavoquinalha/webpack-topzera.svg)](https://greenkeeper.io/)
+
 ``` bash
 $ npm install
 ```
